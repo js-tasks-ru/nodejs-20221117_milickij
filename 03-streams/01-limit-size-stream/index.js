@@ -1,7 +1,8 @@
 const LimitSizeStream = require('./LimitSizeStream');
 const fs = require('fs');
+const { pipeline } = require('node:stream');
 
-const limitedStream = new LimitSizeStream({limit: 8, encoding: 'utf-8'}); // 8 байт
+const limitedStream = new LimitSizeStream({ limit: 8, encoding: 'utf-8' }); // 8 байт
 const outStream = fs.createWriteStream('out.txt');
 
 limitedStream.pipe(outStream);
@@ -11,3 +12,7 @@ limitedStream.write('hello'); // 'hello' - это 5 байт, поэтому э�
 setTimeout(() => {
   limitedStream.write('world'); // ошибка LimitExceeded! в файле осталось только hello
 }, 10);
+
+limitedStream.on('error', err => {
+  console.log(err);
+})
